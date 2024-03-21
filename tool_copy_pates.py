@@ -8,7 +8,7 @@ import pyperclip
 import os
 import sys
 import logging
-import undetected_chromedriver as uc
+# import undetected_chromedriver as uc
 import sqlparse
 
 
@@ -29,9 +29,9 @@ class WebTool:
         try:
             if self.driver is None:
                 logging.info('start chrome driver')
-                options = uc.ChromeOptions()
+                # options = uc.ChromeOptions()
                 # options.add_argument("--headless=new")
-                self.driver = webdriver.Chrome(options=options)
+                self.driver = webdriver.Chrome()
                 self.driver.get("https://www.codeconvert.ai")
             else:
                 logging.warning('chrome driver aleady start')
@@ -502,7 +502,13 @@ class Converter:
 
 
 import json
-username, password, input_folder, output_folder = sys.argv[1:]
+from dotenv import load_dotenv
+import os
+load_dotenv()
+username = os.getenv('GMAIL_GITHUB')
+password = os.getenv('PASSWORD')
+
+input_folder, output_folder = sys.argv[1:]
 logging.info(json.dumps({
     'username' : username, 
     'password' : password, 
