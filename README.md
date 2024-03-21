@@ -2,7 +2,7 @@ Tool for:
 
 How to use:
 1. clone project
-2. create .env file in folder project, then put 2 var like this in .env file:
+2. create .env file in folder project, create 2 var like this in .env file, put your account after =:
    GMAIL_GITHUB=
    PASSWORD=
 3. create 2 folder input and ouput in folder project, then put sas file in input folder.
