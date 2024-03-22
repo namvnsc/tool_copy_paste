@@ -208,7 +208,7 @@ class WebTool:
             py_code = py_code_remove.split('\n')
             py_code_remove = ''
             for line in py_code:
-                if 'read_sas' in line:
+                if 'read_sas' in line and '.sas7bdat' not in line:
                     path = line.split('(')[1].split(')')[0]
                     if '.sas7bdat' not in path and len(path.split('.')) > 1:
                         py_code_remove += '#' + line + '\n'
@@ -221,8 +221,10 @@ class WebTool:
             py_code = py_code_remove.split('\n')
             py_code_remove = ''
             for line in py_code:
-                if line.lower().startswith('rsubmit') or line.lower().startswith('endrsubmit'):
+                if line.lower().startswith('rsubmit') or line.lower().startswith('endrsubmit') or line.startswith(':'):
                     py_code_remove += '#' + line + '\n'    
+                elif line.endswith(r'\"') or line.endswith("\'"):
+                    line = line.replace('"', "'")[:-2] + "'"
                 else:
                     py_code_remove += line + '\n'
             
@@ -304,7 +306,7 @@ class WebTool:
                     # logging.info(block_python_code)
                     # logging.info('_'*70)
                     if block_python_code in ['# retry 20 time and fail', '# wait too long', '# block large'] or block_python_code is None:
-                        logging.error(block_python_code)
+                        logging.error('\n'.join(block))
                         return '', -1
                     if block[0].lower().startswith('proc sql'):
                         
@@ -319,7 +321,7 @@ class WebTool:
                                     .replace(r'\t\t%let', r'\t%let')\
                                     .replace('\t\tLibname', '\tLibname').replace('\t\tlibname', '\tlibname').replace('\t\tLIBNAME', '\tLIBNAME')
 
-                    block_python_code = f'\n\n"""\n\tBLOCK {i + 1}:\n\n' + \
+                    block_python_code = f'\n\nr"""\n\tBLOCK {i + 1}:\n\n' + \
                                         '\t' + sas_cm + '\n"""\n\n' + \
                                         block_python_code 
                     
