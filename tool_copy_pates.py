@@ -232,7 +232,7 @@ class WebTool:
         except Exception as e:
             logging.error(str(e))
             logging.info(py_code)
-            return None
+            return py_code
 
 
 
@@ -246,8 +246,9 @@ class WebTool:
 
 
             sas = '\n'.join([e for e in block if not e.lower().startswith('format') and not e.lower().startswith('informat')])
-            if len(sas) > 18500:
-                logging.info('sas block too large here')
+            # print(f'len sas: {len(sas)}')
+            if len(sas) > 18000:
+                logging.info('sas block too large here, skip this block')
                 return '# block large'
             if sas.endswith(')'):
                 logging.info('\n'.join(block)[:1000])
@@ -301,15 +302,18 @@ class WebTool:
             for i, block in enumerate(blocks):
                 print(f'\r\t\t\t\tconverting {(i+1)} / {len(blocks)} blocks', end='')
                 try:
+
                     block_python_code = self.convert_block(block)
                     # logging.info('\n'.join(block))
                     # logging.info(block_python_code)
                     # logging.info('_'*70)
-                    if block_python_code in ['# retry 20 time and fail', '# wait too long', '# block large'] or block_python_code is None:
+                    if block_python_code in ['# retry 20 time and fail', '# wait too long'] or block_python_code is None:
                         logging.error('\n'.join(block))
                         return '', -1
+                    if block_python_code == '# block large':
+                        block_python_code = '#block too large, please convert it manually'
+
                     if block[0].lower().startswith('proc sql'):
-                        
                         _sql = sqlparse.format('\n'.join(block), reindent=True).split('\n')
                         sas_cm = ['\t\t' + line for line in _sql[:-1]] + ['\t' + _sql[-1]]
                         sas_cm = '\n'.join(sas_cm)
@@ -452,10 +456,10 @@ class Converter:
 
             sasreader = SasCodeReader(input_path)
             blocks, loc, nob = sasreader.get_blocks_code()
-            max_len_block = max([len('\n'.join(bl)) for bl in blocks ])
-            if max_len_block > 19000:
-                logging.info(f'this file contain large blocks: {max_len_block} character -------------> please convert it manually')
-                return
+            # max_len_block = max([len('\n'.join(bl)) for bl in blocks ])
+            # if max_len_block > 19000:
+            #     logging.info(f'this file contain large blocks: {max_len_block} character -------------> please convert it manually')
+                # return
             logging.info(f'file contain: {loc} LoC, {nob} blocks')
             
             while True:
