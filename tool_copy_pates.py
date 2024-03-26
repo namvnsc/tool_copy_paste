@@ -131,7 +131,9 @@ class WebTool:
         try:
             start_n, start_nn = False, False
             start_ampersand = False
+            origin_py = py_code
             #fix &
+
             py_code_remove = ''
             for i, e in enumerate(py_code):
                 if e in (' ', '[', '(', '{', '\\'):
@@ -232,7 +234,7 @@ class WebTool:
         except Exception as e:
             logging.error(str(e))
             logging.info(py_code)
-            return py_code
+            return origin_py
 
 
 
